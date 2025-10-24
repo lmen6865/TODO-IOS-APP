@@ -10,10 +10,19 @@ import CoreData
 import Combine
 
 class TaskListViewModel: ObservableObject {
-    @Published var tasks: [TaskEntity] = []
+    @Published  var tasks: [TaskEntity] = []
+    @Published  var selection: TaskSelection = .all {
+        didSet {
+            fetchTasks(selection: selection, searchTerm: "") 
+        }
+    }
     
     private var context: NSManagedObjectContext?
     private var hasSetContext = false
+    
+    init(selection: TaskSelection){
+        self.selection = selection
+    }
     
     func setContext(context: NSManagedObjectContext) {
         guard !hasSetContext else { return }

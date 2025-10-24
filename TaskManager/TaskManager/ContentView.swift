@@ -10,18 +10,27 @@ import CoreData
 
 struct ContentView: View {
     
-    @State private var selection: TaskSelection? = nil
-    @State private var searchTerm: String = ""
+    @State private var selection: Tab = .featured
+    enum Tab {
+            case featured
+            case groups
+        }
     
     var body: some View {
-        NavigationSplitView {
-            FrontPageView(selection: $selection)
-                .navigationTitle("Your Tasks")
-        } detail: {
-            TaskListView(
-                         selection: selection,
-                         searchTerm: searchTerm)
+        TabView(selection: $selection) {
+            FeaturedListView()
+                .tabItem {
+                    Label("Featured", systemImage: "star")
+                }
+                .tag(Tab.featured)
+            
+            TaskGroupView()
+                .tabItem {
+                    Label("Groups", systemImage: "list.bullet")
+                }
+                .tag(Tab.groups)
         }
+        
     }
 }
 

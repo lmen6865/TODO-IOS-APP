@@ -22,7 +22,7 @@ struct TaskGroupRow: View {
     var body: some View {
         HStack {
             Image(systemName: "folder")
-            TextField("New Group", text: $viewModel.title)
+            Text(viewModel.title)
         }
         .onAppear {
             viewModel.setContext(taskGroup: taskGroup , context: context)

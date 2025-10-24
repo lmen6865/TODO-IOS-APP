@@ -10,22 +10,22 @@ import CoreData
 
 struct TaskListView: View {
     
-    @State private var selectedTask: TaskEntity? = nil
+    @State var selectedTask: TaskEntity? = nil
 //    
-    @State private var detailIsShown: Bool = false
+    @State var detailIsShown: Bool = false
     @Environment(\.managedObjectContext) var context
-    @StateObject private var viewModel: TaskListViewModel
-    let selection: TaskSelection?
-    let searchTerm: String
+    @StateObject var viewModel: TaskListViewModel;
+//    let selection: TaskSelection?
+//    let searchTerm: String
+//    @Binding var selection: TaskSelection
+    var searchTerm = ""
+//
     
-    
-    init(selection: TaskSelection?, searchTerm: String) {
-        self.selection = selection
-        self.searchTerm = searchTerm
-        _viewModel = StateObject(wrappedValue: TaskListViewModel())
-            
-        
-    }
+//    init() {
+//        _viewModel = StateObject(wrappedValue: TaskListViewModel())
+//            
+//        
+//    }
     var body: some View {
         NavigationSplitView {
             List(viewModel.tasks) { task in
@@ -36,24 +36,21 @@ struct TaskListView: View {
             }
             .onAppear {
                 viewModel.setContext(context: context)
-                viewModel.fetchTasks(selection: selection, searchTerm: searchTerm)
+                viewModel.fetchTasks(selection: viewModel.selection, searchTerm: searchTerm)
             }
-            .navigationTitle(selection?.displayName ?? "All")
+            .listStyle(.inset)
+            .navigationTitle(viewModel.selection.displayName)
             .toolbar {
-                ToolbarItemGroup {
                     Button {
                         withAnimation {
                             let _ = TaskEntity(title: "New", dueDate: Date(), context: context)
                             //                        task.group = group
                             PersistenceController.shared.save()
-                            viewModel.fetchTasks(selection: selection, searchTerm: searchTerm)
+                            viewModel.fetchTasks(selection: viewModel.selection, searchTerm: searchTerm)
                         }
                     } label: {
                         Label("Add New Task", systemImage: "plus")
                     }
-                    
-                
-                }
             }
         }detail: {
             Text("Slect Category")
@@ -74,6 +71,7 @@ struct TaskListView: View {
 
 #Preview {
     TaskListView(
-                 selection: .all, searchTerm: "")
+        viewModel:  TaskListViewModel(selection: .all)
+    )
         .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
