@@ -1,0 +1,174 @@
+//
+//  ReminderListViewController+DataSource.swift
+//  Today
+//
+//  Created by Menikdiwela, Lahiru 588 on 2025-10-25.
+//
+
+import UIKit
+import EventKit
+
+extension ReminderListViewController {
+    typealias DataSource = UICollectionViewDiffableDataSource<Int, Reminder.ID>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Int, Reminder.ID>
+    
+    private var reminderStore: ReminderStore { ReminderStore.shared }
+    
+    func updateSnapshot(reloading idsThatChanged: [Reminder.ID] = []) {
+        print("update in list started")
+        print("All reminders:", reminders.map { $0.id })
+        print("Filtered reminders:", filteredReminders.map { $0.id })
+        let filteredId = filteredReminders.map {$0.id}
+        let ids = Array(Set(idsThatChanged.filter { id in filteredReminders.contains(where: { $0.id == id }) }))
+        var snapshot = Snapshot()
+        snapshot.appendSections([0])
+        print("before ", filteredId)
+        snapshot.appendItems(filteredReminders.map { $0.id })
+        print("after", filteredId)
+        if !ids.isEmpty {
+            snapshot.reloadItems(ids)
+        }
+        dataSource?.apply(snapshot)
+    }
+    
+    
+    //indespath consits of items and rows (0 based indexing to identify sections and row)
+    func cellRegistrationHandler(cell: UICollectionViewListCell, indexPath: IndexPath, id: Reminder.ID) {
+        let reminder = reminder(withId: id)
+        var contentConfiguration = cell.defaultContentConfiguration()
+        contentConfiguration.text = reminder.title
+        contentConfiguration.secondaryText = reminder.dueDate.dayAndTimeText
+        contentConfiguration.secondaryTextProperties.font = UIFont.preferredFont(
+                    forTextStyle: .caption1)
+        cell.contentConfiguration = contentConfiguration
+        
+        var doneButtonConfiguration = doneButtonConfiguration(for: reminder)
+        doneButtonConfiguration.tintColor = .todayListCellDoneButtonTint
+        cell.accessories = [
+            .customView(configuration: doneButtonConfiguration), .disclosureIndicator(displayed: .always)
+        ]
+        
+        var backgroundConfiguration = UIBackgroundConfiguration.listCell()
+        backgroundConfiguration.backgroundColor = .todayListCellBackground
+        cell.backgroundConfiguration = backgroundConfiguration
+    }
+    
+    func reminder(withId id: Reminder.ID) -> Reminder {
+        let index = reminders.indexOfReminder(withId: id)
+        return reminders[index]
+    }
+    func updateReminder(_ reminder: Reminder) {
+        let index = reminders.indexOfReminder(withId: reminder.id)
+        reminders[index] = reminder
+    }
+
+    func completeReminder(withId id: Reminder.ID) {
+        var reminder = reminder(withId: id)
+        reminder.isComplete.toggle()
+        updateReminder(reminder)
+        updateSnapshot(reloading: [id])
+    }
+
+    func addReminder(_ reminder: Reminder) {
+        reminders.append(reminder)
+    }
+
+    func deleteReminder(withId id: Reminder.ID) {
+        let index = reminders.indexOfReminder(withId: id)
+        reminders.remove(at: index)
+    }
+//    func updateReminder(_ reminder: Reminder) {
+//        do {
+//            try reminderStore.save(reminder)
+//            let index = reminders.indexOfReminder(withId: reminder.id)
+//            reminders[index] = reminder
+//        } catch ReminderError.accessDenied {
+//        } catch {
+////            showError(error)
+//        }
+//    }
+//    
+//    func completeReminder(withId id: Reminder.ID) {
+//        var reminder = reminder(withId: id)
+//        reminder.isComplete.toggle()
+//        updateReminder(reminder)
+//        updateSnapshot(reloading: [id])
+//    }
+//    
+//    func addReminder(_ reminder: Reminder) {
+//          var reminder = reminder
+//          do {
+//              let idFromStore = try reminderStore.save(reminder)
+//              reminder.id = idFromStore
+//              reminders.append(reminder)
+//          } catch ReminderError.accessDenied {
+//          } catch {
+//              showError(error)
+//          }
+//      }
+
+    
+    private func doneButtonAccessibilityAction(for reminder: Reminder) -> UIAccessibilityCustomAction {
+        let name = NSLocalizedString(
+            "Toggle completion", comment: "Reminder done button accessibility label")
+        let action = UIAccessibilityCustomAction(name: name) { [weak self] action in
+            self?.completeReminder(withId: reminder.id)
+            return true
+        }
+        return action
+    }
+
+
+//    func deleteReminder(withId id: Reminder.ID) {
+//        do {
+//            try reminderStore.remove(with: id)
+//            let index = reminders.indexOfReminder(withId: id)
+//            reminders.remove(at: index)
+//        } catch ReminderError.accessDenied {
+//        } catch {
+//            showError(error)
+//        }
+//    }
+    
+    func prepareReminderStore() {
+        Task {
+            do {
+                try await reminderStore.requestAccess()
+                reminders = try await reminderStore.readAll()
+//                NotificationCenter.default.addObserver(self, selector: #selector(eventStoreChanged(_:)), name: .EKEventStoreChanged, object: nil)
+            } catch ReminderError.accessDenied, ReminderError.accessRestricted {
+//                #if DEBUG
+//                reminders = Reminder.sampleData
+//                #endif
+            } catch {
+                showError(error)
+            }
+            updateSnapshot()
+        }
+    }
+    
+    func reminderStoreChanged() {
+        Task {
+            reminders = try await reminderStore.readAll()
+            updateSnapshot()
+        }
+    }
+
+    private func doneButtonConfiguration(for reminder: Reminder)
+        -> UICellAccessory.CustomViewConfiguration
+        {
+            let symbolName = reminder.isComplete ? "circle.fill" : "circle"
+            let symbolConfiguration = UIImage.SymbolConfiguration(textStyle: .title1)
+            let image = UIImage(systemName: symbolName, withConfiguration: symbolConfiguration)
+            let button = ReminderDoneButton()
+            button.id = reminder.id
+            button.addTarget(self, action: #selector(didPressDoneButton(_:)), for: .touchUpInside)
+            button.setImage(image, for: .normal)
+            return UICellAccessory.CustomViewConfiguration(
+                customView: button, placement: .leading(displayed: .always))
+    }
+    
+    
+    
+    
+}

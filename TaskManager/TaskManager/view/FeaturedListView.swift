@@ -17,21 +17,10 @@ struct FeaturedListView: View {
     @StateObject var viewModel: TaskListViewModel = TaskListViewModel(selection: .all)
     
     var body: some View {
-
-            VStack {
-                Picker("category", selection: $viewModel.selection) {
-                    ForEach(TaskSelection.allCases, id: \.self){ selection in
-                        Text(selection.displayName)
-                            .tag(selection)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-    
-                
                 TaskListView(viewModel: viewModel)
                     .transition(.opacity)
                     .animation(.easeInOut, value: viewModel.selection)
-            }
+                    
     }
 }
 

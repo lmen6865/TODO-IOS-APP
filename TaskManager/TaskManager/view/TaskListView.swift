@@ -40,6 +40,15 @@ struct TaskListView: View {
             }
             .listStyle(.inset)
             .navigationTitle(viewModel.selection.displayName)
+            .toolbar{
+                Picker("category", selection: $viewModel.selection) {
+                    ForEach(TaskSelection.allCases, id: \.self){ selection in
+                        Text(selection.displayName)
+                            .tag(selection)
+                    }
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
             .toolbar {
                     Button {
                         withAnimation {
@@ -51,6 +60,9 @@ struct TaskListView: View {
                     } label: {
                         Label("Add New Task", systemImage: "plus")
                     }
+
+                
+            
             }
         }detail: {
             Text("Slect Category")
