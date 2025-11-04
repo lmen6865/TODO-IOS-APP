@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8126AE022EB370320057CC14 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 8126AE012EB370320057CC14 /* GRDB */; };
-		8126AE042EB370320057CC14 /* GRDB-dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 8126AE032EB370320057CC14 /* GRDB-dynamic */; };
+		81B4CEB72EB79ED10099337D /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 81B4CEB62EB79ED10099337D /* GRDB */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,8 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8126AE022EB370320057CC14 /* GRDB in Frameworks */,
-				8126AE042EB370320057CC14 /* GRDB-dynamic in Frameworks */,
+				81B4CEB72EB79ED10099337D /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,8 +83,7 @@
 			);
 			name = "UIKIT-Learning";
 			packageProductDependencies = (
-				8126AE012EB370320057CC14 /* GRDB */,
-				8126AE032EB370320057CC14 /* GRDB-dynamic */,
+				81B4CEB62EB79ED10099337D /* GRDB */,
 			);
 			productName = Today;
 			productReference = 812A044C2EAD10780047C54F /* UIKIT-Learning.app */;
@@ -117,7 +114,7 @@
 			mainGroup = 812A04432EAD10780047C54F;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				8126AE002EB370320057CC14 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				81B4CEB52EB79ED10099337D /* XCRemoteSwiftPackageReference "GRDB" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 812A044D2EAD10780047C54F /* Products */;
@@ -355,26 +352,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8126AE002EB370320057CC14 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+		81B4CEB52EB79ED10099337D /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/groue/GRDB.swift.git";
+			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = exactVersion;
+				version = 7.8.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8126AE012EB370320057CC14 /* GRDB */ = {
+		81B4CEB62EB79ED10099337D /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8126AE002EB370320057CC14 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = 81B4CEB52EB79ED10099337D /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
-		};
-		8126AE032EB370320057CC14 /* GRDB-dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8126AE002EB370320057CC14 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
-			productName = "GRDB-dynamic";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

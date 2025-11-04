@@ -9,14 +9,17 @@ import GRDB
 
 
 public class Migrator{
-    var migrator: DatabaseMigrator = .init()
-    
-    migrator.eraseDatabaseOnSchemaChange = true
-    
-    public init() {}
+    var migrator = DatabaseMigrator();
+   
+    public init() {
+        #if DEBUG
+          migrator.eraseDatabaseOnSchemaChange = true
+        #endif
+    }
     
     public func migrate(_ writer: some DatabaseWriter) throws {
         try registerVersion1()
+        try registerVersionSimulatedData()
         try migrator.migrate(writer)
     }
     
